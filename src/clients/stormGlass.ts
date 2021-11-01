@@ -1,8 +1,9 @@
 import { AxiosStatic } from 'axios';
 
 export class StormGlass {
-	readonly stormGlassAPIParams = 'swellDirection,swellHeight,swellPeriod,waveDirection,waveHeight,windDirection,windSpeed'
-	readonly stormGlassAPISource = 'noaa'
+  readonly stormGlassAPIParams =
+    'swellDirection,swellHeight,swellPeriod,waveDirection,waveHeight,windDirection,windSpeed';
+  readonly stormGlassAPISource = 'noaa';
 
   constructor(private request: AxiosStatic) {}
 
