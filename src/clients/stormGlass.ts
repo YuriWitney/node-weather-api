@@ -1,5 +1,5 @@
-import { AxiosStatic } from 'axios';
-import { exit } from 'process';
+import { internalError } from '@src/util/errors/internal-error';
+import { AxiosError, AxiosStatic } from 'axios';
 
 export interface StormGlassAPISource {
   [key: string]: number;
@@ -31,6 +31,21 @@ export interface ForecastPoint {
   windSpeed: number;
 }
 
+export class ClientRequestError extends internalError {
+  constructor(message: string) {
+    const internalMessage = `Unexpected error when trying to communicate to StormGlass`;
+    super(`${internalMessage}: ${message}`);
+  }
+}
+
+export class StormGlassResponseError extends internalError {
+  constructor(message: string) {
+    const internalMessage =
+      'Unexpected error returned by the StormGlass service';
+    super(`${internalMessage}: ${message}`);
+  }
+}
+
 export class StormGlass {
   readonly stormGlassAPIParams =
     'swellDirection,swellHeight,swellPeriod,waveDirection,waveHeight,windDirection,windSpeed';
@@ -50,10 +65,15 @@ export class StormGlass {
       );
       return this.normalizeResponse(response.data);
     } catch (err) {
-      const rejectedValue = new Error('Network Error');
-      throw new Error(
-        `Unexpected error when trying to communicate to StormGlass: ${rejectedValue.message}`
-      );
+      const errTyped = err as AxiosError;
+      if (errTyped.response && errTyped.response.status) {
+        throw new StormGlassResponseError(
+          `Error: ${JSON.stringify(
+            errTyped.response.data
+          )} Code: ${JSON.stringify(errTyped.response.status)}`
+        );
+      }
+      throw new ClientRequestError(errTyped.message);
     }
   }
 
