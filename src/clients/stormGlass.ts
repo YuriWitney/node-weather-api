@@ -1,4 +1,5 @@
 import { AxiosStatic } from 'axios';
+import { exit } from 'process';
 
 export interface StormGlassAPISource {
   [key: string]: number;
@@ -38,15 +39,22 @@ export class StormGlass {
   constructor(private request: AxiosStatic) {}
 
   public async fetchPoints(lat: number, lng: number): Promise<ForecastPoint[]> {
-    const response = await this.request.get<StormGlassForecastResponse>(
-      `https://api.stormglass.io/v2/weather/point?params=${this.stormGlassAPIParams}&source=${this.stormGlassAPISource}&lat=${lat}&lng=${lng}`,
-      {
-        headers: {
-          authorization: 'fake-token',
-        },
-      }
-    );
-    return this.normalizeResponse(response.data);
+    try {
+      const response = await this.request.get<StormGlassForecastResponse>(
+        `https://api.stormglass.io/v2/weather/point?params=${this.stormGlassAPIParams}&source=${this.stormGlassAPISource}&lat=${lat}&lng=${lng}`,
+        {
+          headers: {
+            authorization: 'fake-token',
+          },
+        }
+      );
+      return this.normalizeResponse(response.data);
+    } catch (err) {
+      const rejectedValue = new Error('Network Error');
+      throw new Error(
+        `Unexpected error when trying to communicate to StormGlass: ${rejectedValue.message}`
+      );
+    }
   }
 
   private normalizeResponse(
