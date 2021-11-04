@@ -1,6 +1,7 @@
 import { internalError } from '@src/util/errors/internal-error';
-import { AxiosError, AxiosStatic } from 'axios';
+//import { AxiosError, AxiosStatic } from 'axios';
 import * as HTTPUtil from '@src/util/request';
+import { GenericError } from '@src/util/errors/error';
 import config, { IConfig } from 'config';
 
 export interface StormGlassAPISource {
@@ -73,12 +74,12 @@ export class StormGlass {
       );
       return this.normalizeResponse(response.data);
     } catch (err) {
-      const errTyped = err as AxiosError;
-      if (errTyped.response && errTyped.response.status) {
+      const errTyped = err as GenericError;
+      if (HTTPUtil.Request.isRequestError(errTyped)) {
         throw new StormGlassResponseError(
           `Error: ${JSON.stringify(
-            errTyped.response.data
-          )} Code: ${JSON.stringify(errTyped.response.status)}`
+            errTyped.response?.data
+          )} Code: ${JSON.stringify(errTyped.response?.status)}`
         );
       }
       throw new ClientRequestError(errTyped.message);

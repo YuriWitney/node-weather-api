@@ -1,4 +1,5 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { GenericError } from './errors/error';
 
 export interface RequestConfig extends AxiosRequestConfig {}
 
@@ -9,5 +10,9 @@ export class Request {
 
   public get<T>(url: string, config: RequestConfig = {}): Promise<Response<T>> {
     return this.request.get<T, Response<T>>(url, config);
+  }
+
+  public static isRequestError(error: GenericError): boolean {
+    return !!(error.response && error.response.status);
   }
 }
