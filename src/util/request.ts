@@ -1,9 +1,9 @@
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { GenericError } from './errors/error';
 
-export interface RequestConfig extends AxiosRequestConfig {}
+export type RequestConfig = AxiosRequestConfig;
 
-export interface Response<T = any> extends AxiosResponse<T> {}
+export type Response<T = any> = AxiosResponse<T>;
 
 export class Request {
   constructor(private request = axios) {}
