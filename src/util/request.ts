@@ -3,6 +3,7 @@ import { GenericError } from './errors/error';
 
 export type RequestConfig = AxiosRequestConfig;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Response<T = any> = AxiosResponse<T>;
 
 export class Request {
