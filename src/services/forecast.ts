@@ -24,9 +24,9 @@ export interface TimeForecast {
 }
 
 export class ForecastProcessingInternalError extends internalError {
-	constructor(message: string) {
-	super(`Unexpected error during the forecast processing: ${message}`)
-	}
+  constructor(message: string) {
+    super(`Unexpected error during the forecast processing: ${message}`);
+  }
 }
 export class Forecast {
   constructor(protected stormGlass = new StormGlass()) {}
@@ -35,31 +35,35 @@ export class Forecast {
     beaches: Beach[]
   ): Promise<TimeForecast[]> {
     const pointsWithCorrectSource: BeachForecast[] = [];
-		try {
-			for (const beach of beaches) {
-				const points = await this.stormGlass.fetchPoints(beach.lat, beach.lng);
-				const enrichedBeachData = this.enrichedBeacheData(points, beach)
-				pointsWithCorrectSource.push(...enrichedBeachData);
-			}
-			return this.mapForecastByTime(pointsWithCorrectSource);
-		} catch (error) {
-			throw new ForecastProcessingInternalError((error as ForecastProcessingInternalError).message)
-		}
-    
+    try {
+      for (const beach of beaches) {
+        const points = await this.stormGlass.fetchPoints(beach.lat, beach.lng);
+        const enrichedBeachData = this.enrichedBeacheData(points, beach);
+        pointsWithCorrectSource.push(...enrichedBeachData);
+      }
+      return this.mapForecastByTime(pointsWithCorrectSource);
+    } catch (error) {
+      throw new ForecastProcessingInternalError(
+        (error as ForecastProcessingInternalError).message
+      );
+    }
   }
 
-	private enrichedBeacheData(points: ForecastPoint[], beach: Beach): BeachForecast[] {
-		return points.map((e) => ({
-			...{
-				lat: beach.lat,
-				lng: beach.lng,
-				name: beach.name,
-				position: beach.position,
-				rating: 1,
-			},
-			...e,
-		}));
-	}
+  private enrichedBeacheData(
+    points: ForecastPoint[],
+    beach: Beach
+  ): BeachForecast[] {
+    return points.map((e) => ({
+      ...{
+        lat: beach.lat,
+        lng: beach.lng,
+        name: beach.name,
+        position: beach.position,
+        rating: 1,
+      },
+      ...e,
+    }));
+  }
 
   private mapForecastByTime(forecast: BeachForecast[]): TimeForecast[] {
     const forecastByTime: TimeForecast[] = [];
