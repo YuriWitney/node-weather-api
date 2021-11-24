@@ -1,3 +1,3 @@
 import { AxiosError } from 'axios';
 
-export interface GenericError extends AxiosError {}
+export type GenericError = AxiosError;
